@@ -1,0 +1,226 @@
+
+document = agreement {
+  
+  name_full = Pilot Services Agreement
+
+  parties: {
+    recipient = {
+      name_short: MyCompany
+      name_full: MyCompany, Inc.
+    }
+    provider = {
+      name_short: Another Business Company
+      name_full: Another Business Company, Inc.
+    }
+  }
+    
+  documents = {
+    order_form {
+      date services:effective = 2019-08-19
+      duration term = 30 days
+    }
+
+    pilot_terms {
+      bool services:exclusive = false
+      bool services:revocable = true
+      switch services:service_type = saas
+      duration indemnification:duration = 12 months
+    }
+  }
+  
+  {{signature provider}}
+  {{signature recipient}}
+
+}
+
+document = order_form {
+  name_full = Order Form
+
+  body = The attached Pilot Terms and Conditions describe the terms and conditions under which {{provider}}, agrees to provide {{recipient}}, the Services described below. This Order Form and the Pilot Terms and Conditions attached hereto set forth the entire understanding of the parties with respect to the subject matter described herein and constitute the entire agreement (“Agreement”) between the parties, which will be effective as of {{effective_date}}.
+
+  definition services = {
+    title = Services
+    body = The provision of {{provider}} data analytics and management services for {{recipient}} internal evaluation purposes, the scope and implementation of which will be mutually determined by the parties during the course of the pilot based on {{recipient}} objectives and requirements. For the purposes of this Agreement, “Services” shall be limited to the terms set forth in the mutually agreed “Pilot Proposal”, incorporated herein by reference.
+  }
+
+  definition term = {
+    title = Term
+    body = The term of this Agreement (“**Term**”) will commence on {{effective_date}} and continue for {{duration}}, unless earlier terminated as provided herein.
+  }
+}
+
+
+
+document = pilot_terms(provider, recipient) {
+  name_full = Pilot Terms and Conditions
+  section: services_fees_termination(
+    provider = {{provider}},
+    recipient = {{recipient}},
+    exclusive = false,
+    revocable = true,
+    service_type = saas)
+  section: confidentiality_proprietary_rights
+  section: warranty_disclaimer
+  section: limitation_liability
+  section: general
+}
+
+
+
+section services_fees_termination(provider, recipient, exclusive, revocable, service_type) {
+  title = ~Services; Termination~.
+  bp:services(exclusive, revocable, service_type)
+  bp:fees(fee_type = no_fee)
+  bp:termination()
+}
+
+bp services(provider, recipient, exclusive, revocable, service_type) {
+
+  exclusive(bool) {
+    true = non-exclusive
+    false = exclusive
+  }
+  
+  revocable(bool) {
+    true = revocable
+    false = non-revocable
+  }
+  
+  service_type(type) {
+    saas = The parties will cooperate to set up appropriate security protocols for data transfer in relation to the Services and {{recipient}} access to the Services through web interfaces and application program interfaces.
+  }
+
+  body = {{provider}} will use diligent efforts to provide {{recipient}} with a {{exclusive}}, {{revocable}}, right to use, exploit and benefit from the Services during the Term. {{service_type}}. {{provider}} shall at all times provide {{recipient}} reasonable technical support and assistance in connection with the implementation and use of the Services.
+}
+
+bp fees(fee_type) {
+  fee_type {
+    no_fee = without fees for the length of the Term.
+    monthly = according to the attached Monthly Fee Schedule
+    annual = according to the attached Annual Fee Schedule
+  }
+
+  body = The Services are provided {{fee_type}} for the length of the Term.
+}
+
+bp termination() {
+  body = Either party may terminate this Agreement for any reason by giving the other party ten(10) days’ prior written notice thereof.  Sections 2 through 6 will survive any termination of this Agreement.
+}
+
+// TO DO THIS SECTION
+2. ~Confidentiality; Proprietary Rights~.
+
+  1. Each party (the “Receiving Party”) understands that the other party (the “Disclosing Party”) has disclosed or may disclose business, technical or financial information relating to the Disclosing Party’s business (“Proprietary Information”). Proprietary Information of {{provider:name_short}} includes non-public information regarding features, functionality and performance of the Services.  Proprietary Information of {{recipient:name_long}} includes all data and information (including customer data) provided (or made available) by {{recipient:name_long}} in connection with the Services (“{{recipient:name_long}} Data”). The Receiving Party agrees
+    
+    (i)to take reasonable precautions to protect the Disclosing Party’s Proprietary Information, including that {{provider:name_short}} will use industry standard measures to protect the security of all {{recipient:name_long}} Data, and
+
+    (ii)not to use (except in performance of the Services) or divulge to any third person any such Proprietary Information. The Disclosing Party agrees that the foregoing will not apply with respect to any information that
+      (a) is or becomes generally available to the public,
+      (b) was in the Receiving Party’s possession prior to receipt from the Disclosing Party,
+      (c) was rightfully disclosed to the Receiving Party without restriction by a third party,
+      (d) was independently developed without use of any Proprietary Information of the Disclosing Party or
+      (e) is required to be disclosed by law.
+  
+  2. ~Proprietary Rights~. {{provider:name_short}} will own and retain all right, title and interest in and to the Services and all related software and intellectual property. {{recipient:name_long}} will own and retain all right, title and interest in and to
+    (i) the {{recipient:name_long}} Data and any data that is based on or derived from the {{recipient:name_long}} Data (other than anonymized and aggregated data used solely to improve or enhance the Services), and
+    (ii) all other {{recipient:name_long}} technology, software, services, information and intellectual property. Upon any termination of this Agreement, {{provider:name_short}} will return or (at {{recipient:name_long}}’s option) destroy all {{recipient:name_long}} Data and other {{recipient:name_long}} Proprietary Information in its possession or control.
+// END TO DO
+
+section warranty_disclaimer {
+  title = ~Warranty; Disclaimer~.
+  bp:provider_warrants(provider)
+  bp:provider_dislaimers(provider, recipient)
+  bp:recipient_warrants(recipient)
+  bp:indemnification
+  bp:disclaimers
+}
+
+bp provider_warrants(provider) {
+  {{provider:name_short}} represents and warrants that
+  item: it shall provide the Services in a professional and workmanlike manner;
+  item: the Services and all deliverables will conform to the applicable specifications and that none of the Services or deliverables will infringe, misappropriate or violate any intellectual property or other right of any party;
+  item: it shall comply with all applicable laws and regulations in the course of providing the Services;
+  item: the Services are free of all viruses, worms, trojan horses and other infections or harmful routines.
+}
+
+bp provider_disclaimers(provider, recipient) {
+  confidential_information(provider, recipient) {
+  title = Confidential Information.
+  {{provider:name_short}} shall not now nor ever be liable for Confidential Information access given to {{recipient:name_short}} associates/administrator with access to {{recipient:name_short}} account. Any and all individuals given rights to view, edit, administer the {{provider:name_short}} Client Account shall have visibility to any and all {{recipient:name_short}} Data, as provided, edited or displayed by {{recipient:name_long}} Action;
+  }
+
+  cost_of_usage(provider, recipient) {
+  title = Unknown/Unknowable Cost of Usage.
+  body = {{provider:name_short}} shall not now nor ever be liable for any costs or fees associated with {{recipient:name_short}} use of Services. Any and all costs, latency, load, usage fees are completely independent of {{provider:name_short}} Services. {{recipient:name_long}} is empowered through {{recipient:name_long}}’s Client Account to terminate, stall, skip, delete any test/query at any time, {{recipient:name_long}} is strongly encouraged to monitor the cost, frequency and complexity of each and every action by {{recipient:name_long}} representative using {{provider:name_short}} Services.
+  }
+}
+
+bp recipient_warrants(recipient) {
+  {{recipient:name_short}} represents and warrants that {{recipient:name_full}} has proper ownership, license and authority to use {{recipient:name_full}} data provided to {{provider:name_short}} in carrying out the Services.
+}
+
+bp indemnification {
+  Either party shall indemnify the other party from any and all claims, damages, liability, losses, settlement, attorneys’ fees and expenses brought against the indemnified party by any third party, on account of any breach of the foregoing or this Agreement or any other action or inaction by or for or on behalf of the indemnifying party.
+}
+
+bp disclaimers {
+  EXCEPT AS EXPRESSLY SET FORTH HEREIN, EACH PARTY DISCLAIMS ALL WARRANTIES, IMPLIED OR EXPRESSED, INCLUDING WITHOUT LIMITATION ALL IMPLIED WARRANTIES OF MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
+}
+
+section liability = {
+  title = ~Limitation of Liability~.
+  bp:liability(provider, recipient, duration)
+}
+
+bp liability(provider, recipient, duration) {
+  body = EXCEPT FOR EITHER PARTY’S INDEMNIFICATION OBLIGATIONS OR A BREACH OF CONFIDENTIALITY, IN NO EVENT WILL EITHER PARTY BE LIABLE WITH RESPECT TO ANY SUBJECT MATTER OF THIS AGREEMENT FOR (I) ANY SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES (INCLUDING LOST PROFITS), OR (II) TO THE FULLEST EXTENT PERMITTED BY LAW, ANY DIRECT DAMAGES, COSTS, OR LIABILITIES IN EXCESS OF THE TOTAL AGGREGATE AMOUNTS PAID BY {{recipient:name_full}} TO {{provider:name_full}} FOR THE {{duration}} PRECEDING THE CLAIM.
+}
+
+section general = {
+  title = ~General~.
+  bp:contractor
+  bp:governed(state = California)
+  bp:attorney_fees
+  bp:assignment
+  bp:modification
+  bp:notices
+  bp:unenforceable
+  bp:counterparts
+  bp:press
+}
+
+bp contractor {
+  body = For all purposes under this Agreement each party will be and act as an independent contractor and will not bind nor attempt to bind the other to any contract.
+}
+
+bp governed(state) {
+  body = This Agreement and any dispute arising hereunder will be governed by the laws of the State of {{state}}, without regard to the conflicts of law provisions thereof.
+}
+
+bp attorney_fees {
+  body = In any action or proceeding to enforce rights under this Agreement, the prevailing party will be entitled to recover reasonable costs and attorneys’ fees.
+}
+
+bp assignment {
+  body = Neither party will have the right to assign this Agreement, except that either party may assign this Agreement without consent to a successor to substantially all its relevant assets or business.  
+}
+
+bp modification {
+  body = No waiver, change, or modification to this Agreement will be effective unless in writing signed by both parties.  
+}
+
+bp notices {
+  body =  Any notices in connection with this Agreement will be in writing and sent by first class US mail, confirmed facsimile or major overnight delivery courier service to the address specified on the cover sheet or such other address as may be properly specified by written notice hereunder. 
+}
+
+bp unenforceable {
+  body = In the event that any provision of this Agreement will be determined to be illegal or unenforceable, that provision will be limited or eliminated so that this Agreement will otherwise remain in full force and effect and enforceable.  
+}
+
+bp counterparts {
+  body = This Agreement may be executed in two or more counterparts, each of which will be deemed an original, but all of which together shall constitute one and the same instrument. 
+}
+
+bp press {
+ body = Neither party shall issue a press release or other public statement regarding the relationship of the parties or this Agreement without the prior written consent of the other party. 
+}
